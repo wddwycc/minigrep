@@ -21,18 +21,6 @@ impl Config {
     }
 }
 
-// Box<Error> means the function will return a type that implements the Error trait
-pub fn run(config: Config) -> Result<(), Box<Error>> {
-    let mut f = File::open(config.filename)?;
-
-    let mut contents = String::new();
-    f.read_to_string(&mut contents)?;
-
-    println!("With text:\n{}", contents);
-
-    Ok(())
-}
-
 // lifetime parameters specify which argument lifetime is connected to the lifetime of the return value
 pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     let mut results = Vec::new();
@@ -44,6 +32,20 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
     }
 
     results
+}
+
+// Box<Error> means the function will return a type that implements the Error trait
+pub fn run(config: Config) -> Result<(), Box<Error>> {
+    let mut f = File::open(config.filename)?;
+
+    let mut contents = String::new();
+    f.read_to_string(&mut contents)?;
+
+    for line in search(&config.query, &contents) {
+        println!("{}", line);
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
